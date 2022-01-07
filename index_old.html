@@ -1,0 +1,1294 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>COVID19 Report</title>
+    <link rel="icon" href="src-site/img/favicon.ico">
+
+    <!--
+
+    Sentra Template
+
+    https://templatemo.com/tm-518-sentra
+
+    -->
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="src-site/css/fontAwesome.css" rel="stylesheet">
+    <link href="src-site/css/light-box.css" rel="stylesheet">
+    <link href="src-site/css/owl-carousel.css" rel="stylesheet">
+    <link href="src-site/css/templatemo-style.css" rel="stylesheet">
+    <link href="src-site/css/sqlTheme.css" rel="stylesheet">
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" rel="stylesheet" >
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">
+
+    <script src="src-site/js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+
+    <script src="https:///public.tableau.com/javascripts/api/tableau-2.min.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angularjs-slider/7.0.0/rzslider.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/angularjs-slider/7.0.0/rzslider.min.css" rel="stylesheet">
+
+    <script type="text/javascript" src="src-site/js/app.js"></script>
+
+    <style>
+        td, th {
+            text-align: left;
+            padding: 4px;
+        }
+        tr:nth-child(even) {
+            background-color: #D3D3D3;
+        }
+        table, th, td {
+             border: 1px solid black;
+         }
+        .tableTime {
+            width: 80%;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .centerCont {
+            margin-bottom: 10px;
+            margin-top: 10px;
+            justify-content: center;
+            display: flex;
+        }
+    </style>
+
+
+</head>
+
+<body ng-app="myApp" ng-controller="myCtrl" ng-init="initViz1();initViz2();initQueryRT();initQuery4();initQuery5();initQuery6();initQuery7()">
+
+<div class="sidebar-navigation hidde-sm hidden-xs">
+    <div class="logo">
+        <a href="https://www.unimib.it/">Bicocca <br> Open Stats</a>
+    </div>
+    <nav>
+        <ul>
+            <li>
+                <a href="#dati">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    Dati
+                </a>
+            </li>
+            <li>
+                <a href="#query1-section">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    Viz 1
+                </a>
+            </li>
+            <li>
+                <a href="#query2-section">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    Query 2
+                </a>
+            </li>
+            <li>
+                <a href="#query3-section">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    Query 3
+                </a>
+            </li>
+            <li>
+                <a href="#query4-section">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    Query 4
+                </a>
+            </li>
+            <li>
+                <a href="#query5-section">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    Query 5
+                </a>
+            </li>
+            <li>
+                <a href="#query6-section">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    Query 6
+                </a>
+            </li>
+            <li>
+                <a href="#query7-section">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    Query 7
+                </a>
+            </li>
+            <li>
+                <a href="#team">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    Team
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<section class="myHeader"></section>
+
+<div class="page-content">
+    <section id="featured" class="featured content-section">
+        <div class="section-heading">
+            <h1 style="font-size: 40px;">Bicocca<br><em>Open Stats</em></h1>
+            <p style="font-size: 20px;">Portale per il monitoraggio della didattica dell'università di Milano Bicocca</p>
+        </div>
+
+        Homework per il corso di Business Intelligence. Si richiede di:
+        <ul>
+            <li>Scrivere query SQL per ciascuna delle 6+1 domande richieste. Ogni domanda deve essere svolta utilizzando sia il modello relazione denormalizzato sia quello normalizzato.</li>
+            <li>Commentare il risultato ottenuto e le differenze riscontrate nel calcolo della query nell’uno e nell’altro modello.</li>
+            <li>Produrre della documentazione riguardante il progetto svolto.</li>
+            <li>Opzionalmente produrre un cruscotto per la visualizzazione grafica dei risultati ottenuti.</li>
+        </ul>
+
+        Nella sezione dati si descrive il modello fornito con le sue caratteristiche. Per ogni query richiesta si mostra e si discute il codice SQL,
+        (per semplicità solo nel modello denormalizzato), e si analizzano i risultati tramite delle visualizzazione interattive realizzate con il
+        software <a href="https://www.tableau.com/it-it">Tableau</a>. La repository completa del progetto è disponibile su github
+        <a href="https://github.com/Simone-Damico/homework-BI">qui</a>. &Egrave; possibile, inoltre, selezionare un insieme di corsi da analizzare. La selezione sarà usata
+        come filtro per ogni visualizzazione, in questo modo un utente postra concentrare la prorpia analisi solo su uno specifico insieme di corsi con determinate caratteristiche.
+
+
+        <div class="section-content">
+
+        </div>
+    </section>
+
+    <section id="dati" class="featured content-section">
+        <div class="section-heading">
+            <h1><em>Dati</em></h1>
+        </div>
+
+        I dati forniti descrivono una parte dello scenario universitario dell'università di Milano Bicocca, in particolare modellano il concetto di studente, corso di studi,
+        esami e le relazioni tra di essi:
+        <ul>
+            <li>Anagrafiche didattiche: attività didattiche, corsi di studio, docenti</li>
+            <li>Anagrafica studente: genere, età, residenza, cittadinanza</li>
+            <li>Appello: attività didattica, corso di studio, docente, data dell’appello</li>
+            <li>Iscrizione: appello e studente iscritto</li>
+            <li>Esito: appello, studente, esito (superato, insufficienza, ritiro, assenza, voto)</li>
+        </ul>
+        <div class="centerCont" style="margin-bottom: 10px">
+            <img src="src-site/img/modello-dati.png" alt="">
+            <div class="text-content">
+            </div>
+        </div>
+        Oltre al modello relazionale descritto è fornito anche una tabella denormalizzata che contiene tutti i dati, in cui ogni riga rappresenta un'iscrizione ad un appello.
+        Si sono confrontati entrambi i modelli considerando la complessità di esecuzione delle interrogazioni e il tempo di calcolo. La complessità non ha rappresentato un ostacolo
+        pere il modello normalizzato, si sono individuati con facilità i dati necessari per rispondere alle interrogazioni. La differenza più significatica è stato il tempo impiegato
+        per l'esecuzione, maggiore nel caso del modello denormalizzato sopratturro per le query che richiedevano più join. Nella tabella seguente sono riportati i tempi di esecuzione
+        delle query per i modelli.
+
+        <div class="centerCont">
+            <table class="tableTime">
+            <tr>
+                <th>Query</th>
+                <th>Denormalizzata (s)</th>
+                <th>Normalizzata (s)</th>
+            </tr>
+            <tr>
+                <td>Query 1 - Who is playing?</td>
+                <td>0.827</td>
+                <td>0.294</td>
+            </tr>
+            <tr>
+                <td>Query 2 - I’ll never graduate</td>
+                <td>4.945</td>
+                <td>2.993</td>
+            </tr>
+            <tr>
+                <td>Query 3 - Commitment</td>
+                <td>1.412</td>
+                <td>0.156</td>
+            </tr>
+            <tr>
+                <td>Query 4 - hardest/easiest exams</td>
+                <td>4.642</td>
+                <td>9.232</td>
+            </tr>
+            <tr>
+                <td>Query 5 - Fast & Furious</td>
+                <td>613.587 (&#126; 10 min)</td>
+                <td>4.978</td>
+            </tr>
+            <tr>
+                <td>Query 6 - Trial & Error</td>
+                <td>1.165</td>
+                <td>1.070</td>
+            </tr>
+            <tr>
+                <td>Query 7 - Scholarship</td>
+                <td>1.524</td>
+                <td>1.356</td>
+            </tr>
+        </table>
+        </div>
+
+
+        Si è seguita la stessa startegia per ogni query, indipendentemente dal modello usato: si sono dapprima create delle tabelle temporanee con i dati di interesse per
+        la quesy vera e propria, selezionando quindi solo le righe o gli attributi rilevanti, successivamente si è scritta la query finale per rispondere alla specifica domanda.
+
+    </section>
+
+    <section id="query1-section" class="featured content-section">
+        <div class="section-heading">
+            <h1>Query 1<br><em>Who is playing?</em></h1>
+            <p>Distribuzione del numero degli studenti iscritti nei vari appelli,
+                <br>suddivisa per anni e per corso di laurea.</p>
+        </div>
+        <div>
+            Dalla data si è estratto l'anno prendendo le ultime due cifre e aggiungendo il millennio, in questo modo è stato possibile raggruppare gli studenti in base al
+            corso di studi e alla data di appello. Nella visualizzazione si è costruito uno stacked bar chart in cui ogni barra è il giorno di un appello, le sezioni colorate
+            sono i corsi per cui c'è stato un appello in quella data e il valore di ogni sezione è il numero di iscritti per ogni corso. Per poter ordinare le date nel
+            risultato si è dovuto cambiare il formato da dd/mm/Y al formato Y-m-d.<br>
+            Nel caso del modello normalizzato la query è simile: le tabelle coinvolte sono <b>appelli</b> e <b>iscrizioni</b>, la normalizzazione delle date è diversa, il formato usato è
+            d/m/Y quindi nella clausola <code class="sql">CASE</code> si sono gestiti quattro casi a seconda se il giorno o l'anno fossero o meno a due cifre.
+        </div>
+
+        <div>
+            <div class="centerCont">
+                <table class="sqlContainer">
+                    <tr>
+                        <td class="line"><b>1</b></td>
+                        <td class="codeLine"><code class="sql">SELECT <code class="nokey">cdscod, cds,</code> <code class="string">'20'</code><code class="nokey">||</code><code class="operation">substr</code><code class="nokey">(dtappello, -2)</code> AS <code class="nokey">year, <code class="operation">count</code>(*)</code> AS <code class="nokey">num</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>2</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; CASE</code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>3</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp;  WHEN <code class="nokey">DtAppello</code> LIKE <code class="string">'__/__/%'</code><br></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>4</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; THEN <code class="operation">date</code><code class="nokey">(</code><code class="string">'20'</code><code class="nokey">||</code><code class="operation">substr</code><code class="nokey">(dtappello, -2)</code><code class="nokey">||</code><code class="string">'-'</code><code class="nokey">||</code><code class="operation"> substr</code><code class="nokey">(dtappello, 4, 2)</code><code class="nokey">||</code><code class="string">'-'</code><code class="nokey">||</code><code class="operation">substr</code><code class="nokey">(dtappello, 1, 2))</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>5</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; END <code class="nokey">data</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>6</b></td>
+                        <td class="codeLine"><code class="sql">FROM <code class="nokey">bos_denormalizzato</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>7</b></td>
+                        <td class="codeLine"><code class="sql">GROUP BY <code class="nokey">year, DtAppello, cdscod, cds</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>8</b></td>
+                        <td class="codeLine"><code class="sql">ORDER BY <code class="nokey">data;</code></code></td>
+                    </tr>
+                </table>
+            </div>
+
+
+            <div id= "query1">
+                <div  class="bg1 section center" style="float:left; width:100%;justify-content:center;">
+                    <div id="containerQuery1" style="width:100%;height:800px;justify-content:center"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="query2-section" class="featured content-section">
+        <div class="section-heading">
+            <h1>Query 2<br><em>I’ll never graduate</em></h1>
+            <p>Individuazione della Top-10 degli esami più difficili suddivisi per corso di studi.</p>
+        </div>
+        <div>
+            Per esame più difficile si intende l'esame che presenta il tasso di superamento complessivo minore, considerando tutti gli appelli dell’Anno Accademico.
+            Tasso di superamento è inteso come il <b><i>numero di studenti che hanno superato l’appello</i></b> su <b><i>numero di studenti che
+            hanno partecipato all'appello</i></b>.
+        </div>
+        <div>
+            Per prima cosa si è calcolato il tasso di superamento per ogni attività didattica e per ogni anno accademico presente considerando sia tutti gli studenti iscritti e
+            sia solo quelli che hanno passati la specifica attività didattica.
+        </div>
+
+        <div class="centerCont">
+            <table class="sqlContainer">
+                <tr>
+                    <td class="line"><b>1</b></td>
+                    <td class="codeLine"><code class="sql">DROP TABLE IF EXISTS <code class="nokey">iscr_sup_ratio;</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>2</b></td>
+                    <td class="codeLine"><code class="sql">CREATE TEMPORARY TABLE <code class="nokey">iscr_sup_ratio</code> AS</code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>3</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; SELECT <code class="nokey">res.cdscod</code> AS <code class="nokey">cdscod,</code> <code class="nokey">res.CdS</code> AS <code class="nokey">cds,</code>
+                        <code class="nokey">res.year</code> AS <code class="nokey">year,</code> <code class="nokey">res.adcod</code> AS <code class="nokey">adcod,</code>
+                        <code class="nokey">res.ad</code> AS <code class="nokey">ad,</code> </code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>4</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;<code class="nokey">res.num_iscr</code> AS <code class="nokey">num_iscr,</code>
+                        IFNULL<code class="nokey">(res.passati, 0)</code> AS <code class="nokey">passati, (</code>IFNULL<code class="nokey">(res.passati, 0)*100.0)/res.num_iscr</code> AS <code class="nokey">ratio</code><br>
+                    </code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>5</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; FROM <code class="nokey">(</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>6</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; SELECT <code class="nokey">b.adcod, b.CdS, b.ad,</code>
+                        <code class="operation">substr</code><code class="nokey">(dtappello, -2)</code> AS <code class="nokey">year,</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>7</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; <code class="nokey">b.cdscod, </code><code class="operation">count</code><code class="nokey">(*)</code> AS <code class="nokey">num_iscr,</code>
+                        <code class="nokey">passati.num_sup</code> AS <code class="nokey">passati</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>8</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; FROM <code class="nokey">bos_denormalizzato</code> AS <code class="nokey">b</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>9</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; LEFT JOIN <code class="nokey">(</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>10</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; SELECT <code class="nokey">adcod, CdScod, </code><code class="operation">substr</code><code class="nokey">(dtappello, -2)</code> AS <code class="nokey">year,</code>
+                        <code class="operation">IFNULL</code><code class="nokey">(</code>count<code class="nokey">(*), 0)</code> AS <code class="nokey">num_sup</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>11</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; FROM <code class="nokey">bos_denormalizzato</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>12</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; WHERE <code class="nokey">Superamento=1</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>13</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; GROUP BY <code class="nokey">adcod,</code> <code class="operation">substr</code><code class="nokey">(dtappello, -2), CdScod)</code> AS <code class="nokey">passati</code>
+                        ON </code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>14</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; <code class="nokey">b.adcod=passati.adcod</code> AND
+                        <code class="operation">substr</code><code class="nokey">(b.dtappello, -2)=passati.year</code> AND <code class="nokey">b.CdSCod=passati.CdSCod</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>15</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; GROUP BY <code class="nokey">b.adcod,</code> <code class="operation">substr</code><code class="nokey">(dtappello, -2), b.cdscod,
+                        b.ad)</code> AS <code class="nokey">res;</code></code></td>
+                </tr>
+            </table>
+        </div>
+
+        <div>
+            Successivamente si sono selezionate le prime dieci attività con indice più alto per ogni anno.
+        </div>
+
+        <div class="centerCont">
+            <table class="sqlContainer">
+                <tr>
+                    <td class="line"><b>1</b></td>
+                    <td class="codeLine"><code class="sql">SELECT <code class="nokey">*</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>2</b></td>
+                    <td class="codeLine"><code class="sql">FROM <code class="nokey">iscr_sup_ratio</code> AS <code class="nokey">a</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>3</b></td>
+                    <td class="codeLine"><code class="sql">WHERE <code class="nokey"> a.adcod</code> IN <code class="nokey"> (</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>4</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; SELECT <code class="nokey"> b.adcod</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>5</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; FROM <code class="nokey"> iscr_sup_ratio</code> AS <code class="nokey"> b</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>6</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; where <code class="nokey"> b.cdscod=a.cdscod</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>7</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; ORDER BY <code class="nokey"> b.cdscod, b.year, b.ratio</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>8</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; LIMIT <code class="nokey"> 10</code><code class="nokey">)</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>9</b></td>
+                    <td class="codeLine"><code class="sql">ORDER BY <code class="nokey"> a.cdscod, a.year, a.ratio;</code></code></td>
+                </tr>
+            </table>
+        </div>
+
+        <div>
+            Nella visualizzazione si vedono i vari corsi selezionati nella query ordinati in base all'indice di difficoltà medio nel periodo di osservazione. Al passaggio su ogni
+            attivià si mostra anche l'andamento dell'indice in base agli anni, in questo modo si può capire se l'indice è cresciuto o è diminuito
+        </div>
+
+        <div id= "query2">
+            <div class="bg1 section center" style="float:left; width:100%;">
+                <div id="containerQuery2" style="width:100%;height:800px"></div>
+            </div>
+        </div>
+    </section>
+    <section id="query3-section" class="featured content-section">
+        <div class="section-heading">
+            <h1>Query 3<br><em>Commitment</em></h1>
+            <p>Individuazione dei corsi di laurea ad elevato <b><i>tasso di commitment</i></b>  , ovvero appelli di esami diversi ma
+                del medesimo corso di laurea che si sono svolti nello stesso giorno.</p>
+        </div>
+        <div>
+            <div>
+                Per ogni corso si è calcolato il numero totale di appelli, il numero di appelli nello stesso giorno e il tasso di commitment.
+                Si sono ordinati i risultati in base al valore del tasso e selezionati i primi dieci. Nella visualizzazione, al passaggio su ogni corso, si mostra la distribuzione
+                degli appelli nello stesso giorno per ogni mese, inoltre il numero dei primi corsi per tasso di commitment è modificabile.
+            </div>
+
+            <div class="centerCont">
+                <table class="sqlContainer">
+                    <tr>
+                        <td class="line"><b>1</b></td>
+                        <td class="codeLine"><code class="sql">SELECT <code class="nokey">res.CdS</code> AS <code class="nokey">CdS, sum_commit, sum_tutti, sum_commit*1.0/sum_tutti</code> AS <code class="nokey">tasso_commit</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>2</b></td>
+                        <td class="codeLine"><code class="sql">FROM <code class="nokey">(</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>3</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; SELECT <code class="nokey">*</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>4</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; FROM <code class="nokey">(</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>5</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; SELECT <code class="nokey">CdSCod, cds,</code> <code class="operation">sum</code><code class="nokey">(tutti.count_tutti)</code> AS <code class="nokey">sum_tutti</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>6</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; FROM <code class="nokey">(</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>7</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; SELECT <code class="nokey">CdSCod, CdS,</code> <code class="operation">count</code><code class="nokey">(</code>DISTINCT <code class="nokey">ad)</code> AS <code class="nokey">count_tutti</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>8</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; FROM <code class="nokey">bos_denormalizzato</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>9</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; GROUP BY <code class="nokey">DtAppello, CdS)</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>10</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; GROUP BY <code class="nokey">CdS)</code> AS <code class="nokey">tutti</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>11</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; LEFT JOIN <code class="nokey">(</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>12</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; SELECT <code class="nokey">CdSCod, CdS,</code> <code class="operation">sum</code><code class="nokey">(commited.count_commit)</code> AS <code class="nokey">sum_commit</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>13</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; FROM <code class="nokey">(</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>14</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; SELECT <code class="nokey">CdSCod, CdS,</code> <code class="operation">count</code><code class="nokey">(</code>DISTINCT <code class="nokey">ad)</code> AS <code class="nokey">count_commit</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>15</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; FROM <code class="nokey">bos_denormalizzato</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>16</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; GROUP BY <code class="nokey">DtAppello, CdS)</code> AS <code class="nokey">com</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>17</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; WHERE <code class="nokey">com.count_commit > 1</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>18</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; GROUP BY <code class="nokey">com.CdS)</code> AS <code class="nokey">commited</code> ON <code class="nokey">tutti.CdS=commited.CdS</code> AND <code class="nokey">tutti.DtAppello=commited.DtAppello)</code> AS <code class="nokey">res</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>19</b></td>
+                        <td class="codeLine"><code class="sql">ORDER BY <code class="nokey">tasso_commit</code> DESC</code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>20</b></td>
+                        <td class="codeLine"><code class="sql">LIMIT <code class="nokey">10;</code></code></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id= "query3">
+                <div  class="bg1 section center" style="float:left; width:100%;">
+                    <div id="containerQueryRT" style="width:100%;height:800px"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="query4-section" class="featured content-section">
+        <div class="section-heading">
+            <h1>Query 4<br><em>hardest/easiest exams</em></h1>
+            <p>Individuazione della Top-3 degli esami con media voti maggiore e minore rispettivamente, calcolati per ogni singolo corso di studi.</p>
+        </div>
+        <div>
+            Si è calcolata la media dei voti di ogni attività didattica per ogni corso di studio.
+        </div>
+
+        <div class="centerCont">
+            <table class="sqlContainer">
+                <tr>
+                    <td class="line"><b>1</b></td>
+                    <td class="codeLine"><code class="sql">DROP TABLE IF EXISTS <code class="nokey">media_esami;</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>2</b></td>
+                    <td class="codeLine"><code class="sql">CREATE TEMPORARY TABLE <code class="nokey">media_esami</code> AS</code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>3</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; SELECT <code class="nokey">CdSCod, CdS, AdCod,</code> AD, <code class="operation">avg</code><code class="nokey">(Voto)</code> AS <code class="nokey">voto_medio</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>4</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; FROM <code class="nokey">bos_denormalizzato</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>5</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; WHERE <code class="nokey">Superamento = 1</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>6</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; GROUP BY <code class="nokey">CdSCod, CdS, AdCod, AD;</code></code></td>
+                </tr>
+            </table>
+        </div>
+
+        <div>
+            Si sono selezionate le prime tre e le ultime tre attività didattiche per ogni corso di studio. Nella visualizzazione si è scelto di mostrare solo i corsi di studi con
+            almeno sei corsi per i quali, quindi ha senso fare un confronto tra i primi tre e gli ultimi tre.
+        </div>
+
+        <div class="centerCont">
+            <table class="sqlContainer">
+                <tr>
+                    <td class="line"><b>1</b></td>
+                    <td class="codeLine"><code class="sql"><code class="comment">-- Peggiori 3</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>2</b></td>
+                    <td class="codeLine"><code class="sql">SELECT <code class="nokey">*</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>3</b></td>
+                    <td class="codeLine"><code class="sql">FROM <code class="nokey">media_esami</code> AS <code class="nokey">a</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>4</b></td>
+                    <td class="codeLine"><code class="sql">WHERE <code class="nokey">a.adcod</code> IN <code class="nokey">(</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>5</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; SELECT <code class="nokey">b.adcod</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>6</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; FROM <code class="nokey">media_esami</code> AS <code class="nokey">b</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>7</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; WHERE <code class="nokey">b.cdscod=a.cdscod</code> AND <code class="nokey">b.voto_medio</code> IS NOT NULL</code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>8</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; ORDER BY <code class="nokey">b.cdscod, b.voto_medio</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>9</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; LIMIT <code class="nokey">3</code>)</code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>10</b></td>
+                    <td class="codeLine"><code class="sql">ORDER BY <code class="nokey">a.cdscod, a.voto_medio;</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>11</b></td>
+                    <td class="codeLine"><code class="sql"></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>12</b></td>
+                    <td class="codeLine"><code class="sql"><code class="comment">-- Migliori 3</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>13</b></td>
+                    <td class="codeLine"><code class="sql">SELECT <code class="nokey">*</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>14</b></td>
+                    <td class="codeLine"><code class="sql">FROM <code class="nokey">media_esami</code> AS <code class="nokey">a</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>15</b></td>
+                    <td class="codeLine"><code class="sql">WHERE <code class="nokey">a.adcod</code> IN <code class="nokey">(</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>16</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; SELECT <code class="nokey">b.adcod</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>17</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; FROM <code class="nokey">media_esami</code> AS <code class="nokey">b</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>18</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; WHERE <code class="nokey">b.cdscod=a.cdscod</code> AND <code class="nokey">b.voto_medio</code> IS NOT NULL</code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>19</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; ORDER BY <code class="nokey">b.cdscod, b.voto_medio</code> DESC</code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>20</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; LIMIT <code class="nokey">3</code>)</code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>21</b></td>
+                    <td class="codeLine"><code class="sql">ORDER BY <code class="nokey">a.cdscod, a.voto_medio</code>DESC<code class="nokey">;</code></code></td>
+                </tr>
+            </table>
+        </div>
+
+        <div id= "query4">
+            <div  class="bg1 section center" style="float:left; width:100%;">
+                <div id="containerQuery4" style="width:100%;height:800px"></div>
+            </div>
+        </div>
+
+    </section>
+    <section id="query5-section" class="featured content-section">
+        <div class="section-heading">
+            <h1>Query 5<br><em>Fast & Furious</em></h1>
+            <p>Calcolare la distribuzione degli studenti fast & furious per corso di studi, ovvero studenti con il rapporto
+                <b><i>votazione media riportata negli esami superati</i></b> su <b><i>periodo di attività</i></b> maggiore.</p>
+        </div>
+
+        <div>
+
+            <div>
+                Per periodo di attività si intende il numero di giorni trascorsi tra il primo appello sostenuto (non necessariamente superato) e l'ultimo. Per ogni studente si
+                è calcolato il numero degli esami sostenuti, questa distribuzione è stata usata per il calcolo della mediana
+            </div>
+
+            <div class="centerCont">
+                <table class="sqlContainer">
+                    <tr>
+                        <td class="line"><b>1</b></td>
+                        <td class="codeLine"><code class="sql">DROP TABLE IF EXISTS <code class="nokey">median;</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>2</b></td>
+                        <td class="codeLine"><code class="sql">CREATE TEMPORARY TABLE <code class="nokey">median</code> AS</code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>3</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; SELECT <code class="nokey">CdS, CdSCod, Studente,</code> <code class="operation">count</code><code class="nokey">(*)</code> AS <code class="nokey">c</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>4</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; FROM <code class="nokey">bos_denormalizzato</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>5</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; GROUP BY <code class="nokey">Studente, CdS, CdSCod</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>6</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; ORDER BY <code class="nokey">c;</code></code></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div>
+                In questa query si sono considerati solo gli studenti che hanno fatto un numero di esame almeno uguale alla mediana degli esami per studenti (che ha valore 7).
+                Per ognuno di loro si calcola la media sugli esami sostenuti e la differenza in giorni tra il primo esame e l'ultimo.
+            </div>
+
+            <div class="centerCont">
+                <table class="sqlContainer">
+                    <tr>
+                        <td class="line"><b>1</b></td>
+                        <td class="codeLine"><code class="sql">DROP TABLE IF EXISTS <code class="nokey">fast_furious;</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>2</b></td>
+                        <td class="codeLine"><code class="sql">CREATE TEMPORARY TABLE <code class="nokey">fast_furious</code> AS</code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>3</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; SELECT <code class="nokey">stu.CdSCod</code> AS <code class="nokey">cdscod, stu.CdS</code> AS <code class="nokey">cds, stu.Studente</code> AS <code class="nokey">Studente, avg_voto</code> AS <code class="nokey">avg_voto, median.c</code> AS <code class="nokey">num_esami,</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>4</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; <code class="operation">max</code><code class="nokey">(stu.date_norm)</code> AS <code class="nokey">max,</code> <code class="operation">min</code><code class="nokey">(stu.date_norm)</code> AS <code class="nokey">min,</code>
+                            <code class="operation">julianday</code><code class="nokey">(</code>max<code class="nokey">(stu.date_norm)) -</code> <code class="operation">julianday</code><code class="nokey">(</code>min<code class="nokey">(date_norm))</code> AS <code class="nokey">diff_day</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>5</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; FROM <code class="nokey">(</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>6</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; SELECT <code class="nokey">*,</code> CASE</code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>7</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; WHEN <code class="nokey">DtAppello</code> LIKE <code class="string">'__/__/%'</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>8</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; THEN <code class="operation">date</code><code class="nokey">(</code><code class="string">'20'</code><code class="nokey">||</code><code class="operation">substr</code><code class="nokey">(dtappello,-2)||</code><code class="string">'-'</code><code class="nokey">||</code><code class="operation">substr</code><code class="nokey">(dtappello, 4,2)||</code><code class="string">'-'</code><code class="nokey">||</code><code class="operation">substr</code><code class="nokey">(dtappello,1,2))</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>9</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; END <code class="string">'date_norm'</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>10</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; FROM <code class="nokey">(</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>11</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; SELECT <code class="nokey">*</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>12</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; FROM <code class="nokey">median</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>13</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; WHERE <code class="nokey">c>=(</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>14</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; SELECT <code class="nokey">c</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>15</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; FROM <code class="nokey">(</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>16</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; SELECT cast<code class="nokey">(((</code>min<code class="nokey">(rowid)+</code>max<code class="nokey">(rowid))/2)</code> AS INTEGER<code class="nokey">)</code> AS <code class="nokey">midrow</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>17</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; FROM <code class="nokey">median)</code> AS <code class="nokey">t, median</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>18</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; WHERE <code class="nokey">median.ROWID = t.midrow))</code> AS <code class="nokey">ss</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>19</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; LEFT JOIN <code class="nokey">bos_denormalizzato</code> AS <code class="nokey">d</code> ON <code class="nokey">d.CdS = ss.CdS</code> AND
+                            <code class="nokey">d.CdSCod=ss.CdSCod</code> AND <code class="nokey">d.Studente=ss.Studente)</code> AS <code class="nokey">stu</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>20</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; LEFT JOIN <code class="nokey">(</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>21</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; SELECT <code class="nokey">CdSCod, CdS, Studente,</code> avg <code class="nokey">(Voto)</code> AS <code class="nokey">avg_voto</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>22</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; FROM <code class="nokey">bos_denormalizzato</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>23</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; WHERE <code class="nokey">Voto</code> IS NOT NULL</code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>24</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; GROUP BY <code class="nokey">Studente, CdSCod, CdS)</code> AS <code class="nokey">avg_media_tab</code> ON <code class="nokey">stu.Studente=avg_media_tab.Studente</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>25</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; LEFT JOIN <code class="nokey">median</code> ON <code class="nokey">stu.Studente=median.Studente</code> AND <code class="nokey">stu.CdSCod=median.CdSCod</code> AND <code class="nokey">stu.CdS=median.CdS</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>26</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; GROUP BY <code class="nokey">stu.Studente, stu.CdSCod, stu.CdS;</code></code></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div>
+                L'indicatore <em>Fast & Furious</em> è calcolato come combinazione lineare tra la media e la differenza di giorni entrambi normalizzati come rapporto con il massimo
+                valore nel periodo di osservazione, il periodo normalizzato è moltiplicato per il numero di esami di ogni studente. Se aumenta la differenza di giorni o diminuisce il
+                numero di esami lo studente sarà meno <em>Fast</em>, mentre se diminuisce la media sarà meno <em>Furious</em>
+            </div>
+&apos;
+            <div class="centerCont">
+                <table class="sqlContainer">
+                    <tr>
+                        <td class="line"><b>1</b></td>
+                        <td class="codeLine"><code class="sql"><code class="nokey">-- Query finale</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>2</b></td>
+                        <td class="codeLine"><code class="sql">SELECT <code class="nokey">*, 0.5*r.avg_voto_norm+0.5*((1-r.diff_day_norm)*(num_esami_norm))</code> AS <code class="nokey">ratio</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>3</b></td>
+                        <td class="codeLine"><code class="sql">FROM <code class="nokey">(</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>4</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; SELECT <code class="nokey">*, (diff_day/(</code>SELECT <code class="operation">max</code><code class="nokey">(diff_day)</code> FROM <code class="nokey">fast_furious))</code> AS <code class="nokey">diff_day_norm,
+                            (avg_voto/(</code>SELECT <code class="operation">max</code><code class="nokey">(avg_voto)</code> FROM <code class="nokey">fast_furious))</code> AS <code class="nokey">avg_voto_norm,</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>5</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; <code class="nokey">(1.0*num_esami/(</code>SELECT <code class="operation">max</code><code class="nokey">(num_esami)</code> FROM <code class="nokey">fast_furious_norm))</code> AS <code class="nokey">num_esami_norm</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>6</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; FROM <code class="nokey">fast_furious)</code> AS <code class="nokey">r</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>7</b></td>
+                        <td class="codeLine"><code class="sql">ORDER BY <code class="nokey">ratio</code> DESC<code class="nokey">;</code></code></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div style="margin-top: 10px;">
+                <div style="float:left; display:block;">Scegli quanto far pesare la media del voto, rispetto al periodo di attività, nel calcolo dell'indice <em>Fast & Furious</em>
+                    per gli studenti: &nbsp;</div><input ng-model="slider.value" ng-change="setPesiViz5(slider.value/100)" type="number" min="0" max="100" step="1" style="width: 60px; float:left; display:block;"/> &nbsp;% o
+                usa l'apposita barra
+                <form id="pesi" action="#" method="post" style="margin-top: 50px;  width: 90%;">
+                    <rzslider rz-slider-model="slider.value" rz-slider-options="slider.options"></rzslider>
+                </form>
+
+                <div id= "query5">
+                    <div class="bg1 section center" style="float:left; width:100%;justify-content:center;">
+                        <div id="containerQuery5" style="width:100%;height:800px;justify-content:center"></div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </section>
+    <section id="query6-section" class="featured content-section">
+        <div class="section-heading">
+            <h1>Query 6<br><em>Trial & Error</em></h1>
+            <p>Individuazione della Top-3 degli esami <b><i>trial & error</i></b>, ovvero esami che richiedono il maggior numero di tentativi prima del superamento.</p>
+        </div>
+
+        <div>
+            Dato uno corso di studi, il rispettivo valore <b><i>trial & error</i></b> è dato dalla media del numero di tentativi (bocciature) di ogni studente per ogni appello del corso.
+            Si contano, per ogni studente, il numero di esami non passati per ogni attività didattica e poi si aggregano i tentativi per ogni attività didattica.
+        </div>
+        <div>
+            <div class="centerCont">
+                <table class="sqlContainer">
+                    <tr>
+                        <td class="line"><b>1</b></td>
+                        <td class="codeLine"><code class="sql">SELECT <code class="nokey">a.adcod, a.AD, a.cds,</code> avg<code class="nokey">(a.tent)</code> AS <code class="nokey">tentativi</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>2</b></td>
+                        <td class="codeLine"><code class="sql">FROM <code class="nokey">(</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>3</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; SELECT <code class="nokey">AdCod, CdS, ad,</code> count<code class="nokey">(*)</code> AS <code class="nokey">tent</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>4</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; FROM <code class="nokey">bos_denormalizzato</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>4</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; WHERE <code class="nokey">Superamento = 0</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>5</b></td>
+                        <td class="codeLine"><code class="sql">&nbsp;&nbsp; GROUP BY <code class="nokey">Studente, ad, AdCod, CdS)</code> AS <code class="nokey">a</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>6</b></td>
+                        <td class="codeLine"><code class="sql">GROUP BY <code class="nokey">a.adcod, a.AD</code></code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>7</b></td>
+                        <td class="codeLine"><code class="sql">ORDER BY <code class="nokey">tentativi</code> DESC</code></td>
+                    </tr>
+                    <tr>
+                        <td class="line"><b>8</b></td>
+                        <td class="codeLine"><code class="sql">LIMIT <code class="nokey">3;</code></code></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id= "query6">
+                <div id="navleft" class="bg1 section center" style="float:left; width:100%;justify-content:center;">
+                    <div id="containerQuery6" style="width:100%;height:800px;justify-content:center"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="query7-section" class="featured content-section">
+        <div class="section-heading">
+            <h1>Query 7<br><em>Scholarship</em></h1>
+            <p>Si è calcolato quanto costa ogni corso di studio in base ai crediti di merito che ricevono gli studenti che lo compongono.</p>
+        </div>
+        <div>
+            Si sono calcolati, per ogni corso di studi, il numero di studenti che hanno la media appartenente alle tre fasce. Nella prima fascia rientrano gli studenti con una media tra 27 e 28 e hanno diritto a 125&euro;, 
+			la seconda tra 28 e 29 con 250&euro; e la terza con voto maggiore o uguale a 29 da diritto a 500&euro;.
+        </div>
+
+        <div class="centerCont">
+            <table class="sqlContainer">
+                <tr>
+                    <td class="line"><b>1</b></td>
+                    <td class="codeLine"><code class="sql"><code class="comment">-- Studenti con media tra il 27 e il 28 escluso</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>2</b></td>
+                    <td class="codeLine"><code class="sql">DROP TABLE IF EXISTS <code class="nokey">media_27;</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>3</b></td>
+                    <td class="codeLine"><code class="sql">CREATE TEMPORARY TABLE <code class="nokey">media_27</code> AS</code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>4</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; SELECT <code class="nokey">v27.CdSCod</code> AS <code class="nokey">cdscod, v27.CdS</code> AS <code class="nokey">cds,</code> <code class="operation">count</code><code class="nokey">(v27.voto27)</code> AS <code class="nokey">media_27</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>5</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; FROM <code class="nokey">(</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>6</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; SELECT <code class="nokey">CdSCod, cds,</code> <code class="operation">avg</code><code class="nokey">(Voto)</code> as <code class="nokey">voto27</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>7</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; FROM <code class="nokey">bos_denormalizzato</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>8</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; GROUP BY <code class="nokey">Studente, CdS, CdSCod</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>9</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; HAVING <code class="nokey">voto27 >= 27</code> AND <code class="nokey">voto27 < 28)</code> AS <code class="nokey">v27</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>10</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; GROUP BY <code class="nokey">v27.CdS, v27.CdSCod;</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>11</b></td>
+                    <td class="codeLine"><code class="sql"></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>12</b></td>
+                    <td class="codeLine"><code class="sql"><code class="comment">-- Studenti con media tra il 28 e il 29 escluso</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>13</b></td>
+                    <td class="codeLine"><code class="sql">DROP TABLE IF EXISTS <code class="nokey">media_28;</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>14</b></td>
+                    <td class="codeLine"><code class="sql">CREATE TEMPORARY TABLE <code class="nokey">media_28</code> AS</code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>15</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; SELECT <code class="nokey">v28.CdSCod</code> AS <code class="nokey">cdscod, v28.CdS</code> AS <code class="nokey">cds,</code> <code class="operation">count</code><code class="nokey">(v28.voto28)</code> AS <code class="nokey">media_28</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>16</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; FROM <code class="nokey">(</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>17</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; SELECT <code class="nokey">CdSCod, cds,</code> <code class="operation">avg</code><code class="nokey">(Voto)</code> as <code class="nokey">voto28</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>18</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; FROM <code class="nokey">bos_denormalizzato</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>19</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; GROUP BY <code class="nokey">Studente, CdS, CdSCod</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>20</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; HAVING <code class="nokey">voto28 >= 28</code> AND <code class="nokey">voto28 < 29)</code> AS <code class="nokey">v28</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>21</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; GROUP BY <code class="nokey">v28.CdS, v28.CdSCod;</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>22</b></td>
+                    <td class="codeLine"><code class="sql"></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>23</b></td>
+                    <td class="codeLine"><code class="sql"><code class="comment">-- Studenti con media maggiore o uguale al 29</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>24</b></td>
+                    <td class="codeLine"><code class="sql">DROP TABLE IF EXISTS <code class="nokey">media_2930;</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>25</b></td>
+                    <td class="codeLine"><code class="sql">CREATE TEMPORARY TABLE <code class="nokey">media_2930</code> AS</code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>26</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; SELECT <code class="nokey">v2930.CdSCod</code> AS <code class="nokey">cdscod, v2930.CdS</code> AS <code class="nokey">cds,</code> <code class="operation">count</code><code class="nokey">(v2930.voto2930)</code> AS <code class="nokey">media_2930</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>27</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; FROM <code class="nokey">(</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>28</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; SELECT <code class="nokey">CdSCod, cds,</code> <code class="operation">avg</code><code class="nokey">(Voto)</code> as <code class="nokey">voto2930</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>29</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; FROM <code class="nokey">bos_denormalizzato</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>30</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; GROUP BY <code class="nokey">Studente, CdS, CdSCod</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>31</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp;&nbsp; HAVING <code class="nokey">voto2930 >= 29)</code> AS <code class="nokey">v2930</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>32</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; GROUP BY <code class="nokey">v2930.CdS, v2930.CdSCod;</code></code></td>
+                </tr>
+            </table>
+        </div>
+
+        <div>
+            Si simula il <code class="sql">FULL OUTER JOIN</code>, non supportato in SQLite, come l'unione dei left join e si calcola, per ogni corso di studi,
+            l'ammontare dei crediti di merito.
+        </div>
+
+        <div class="centerCont">
+            <table class="sqlContainer">
+                <tr>
+                    <td class="line"><b>1</b></td>
+                    <td class="codeLine"><code class="sql"><code class="comment">-- tabella con la prime unione</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>2</b></td>
+                    <td class="codeLine"><code class="sql">DROP TABLE IF EXISTS <code class="nokey">media2728;</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>3</b></td>
+                    <td class="codeLine"><code class="sql">CREATE TEMPORARY TABLE <code class="nokey">media2728</code> AS</code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>4</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; SELECT <code class="nokey">*</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>5</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; FROM <code class="nokey">media_27</code> LEFT JOIN <code class="nokey">media_28</code> ON <code class="nokey">media_27.cdscod=media_28.CdSCod</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>6</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; UNION ALL</code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>7</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; SELECT <code class="nokey">*</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>8</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; FROM <code class="nokey">media_28</code> LEFT JOIN <code class="nokey">media_27</code> ON <code class="nokey">media_27.cdscod=media_28.CdSCod</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>9</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; WHERE <code class="nokey">media_27.cdscod</code> IS NULL<code class="nokey">;</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>10</b></td>
+                    <td class="codeLine"><code class="sql"></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>11</b></td>
+                    <td class="codeLine"><code class="sql"><code class="comment">-- query finale</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>12</b></td>
+                    <td class="codeLine"><code class="sql">SELECT <code class="nokey">res.CdSCod, res.cds, res.media_27, res.media_28, res.media_2930,</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>13</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; &nbsp; <code class="nokey">res.media_27*125+res.media_28*250+res.media_2930*500</code> AS <code class="nokey">cred_merito</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>14</b></td>
+                    <td class="codeLine"><code class="sql">FROM <code class="nokey">(</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>15</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; SELECT <code class="nokey">*</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>16</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; FROM <code class="nokey">media2728</code> LEFT JOIN <code class="nokey">media_2930</code> ON <code class="nokey">media2728.CdSCod=media_2930.CdSCod</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>17</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; UNION ALL</code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>18</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; SELECT <code class="nokey">*</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>19</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; FROM <code class="nokey">media2728</code> LEFT JOIN <code class="nokey">media_2930</code> ON <code class="nokey">media2728.CdSCod=media_2930.CdSCod</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>20</b></td>
+                    <td class="codeLine"><code class="sql">&nbsp;&nbsp; WHERE <code class="nokey">media2728.CdSCod</code> IS NULL<code class="nokey">)</code> AS <code class="nokey">res</code></code></td>
+                </tr>
+                <tr>
+                    <td class="line"><b>21</b></td>
+                    <td class="codeLine"><code class="sql">ORDER BY <code class="nokey">cred_merito</code> DESC<code class="nokey">;</code></code></td>
+                </tr>
+            </table>
+        </div>
+
+        <div id= "query7">
+            <div  class="bg1 section center" style="float:left; width:100%;justify-content:center;">
+                <div id="containerQuery7" style="width:100%;height:800px;justify-content:center"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="team" class="featured content-section">
+        <div class="section-heading">
+            <h1>Team</h1>
+        </div>
+        <div>
+            <ul class="par">
+                <li>Davide Porcellini - 816586<br>
+                    Corso di laurea magistrale in Data Science<br>
+                    Università degli studi di Milano Bicocca - Dipartimento di Informatica, Sistemistica e Comunicazione DISCo</li>
+                <li>Simone D’amico - 850369<br>
+                    Corso di laurea magistrale in Data Science<br>
+                    Università degli studi di Milano Bicocca - Dipartimento di Informatica, Sistemistica e Comunicazione DISCo</li>
+            </ul>
+        </div>
+    </section>
+    <section class="footer">
+        <p>Homework Business Intelligence 2020 Site Template: <a href="https://templatemo.com/">TemplateMo</a></p>
+    </section>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="src-site/js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
+
+<script src="src-site/js/vendor/bootstrap.min.js"></script>
+
+<script src="src-site/js/plugins.js"></script>
+<script src="src-site/js/main.js"></script>
+
+<script>
+    // Hide Header on on scroll down
+    var didScroll;
+    var lastScrollTop = 0;
+    var delta = 5;
+    var navbarHeight = $('header').outerHeight();
+
+    $(window).scroll(function(event){
+        didScroll = true;
+    });
+
+    setInterval(function() {
+        if (didScroll) {
+            hasScrolled();
+            didScroll = false;
+        }
+    }, 250);
+
+    function hasScrolled() {
+        var st = $(this).scrollTop();
+
+        // Make sure they scroll more than delta
+        if(Math.abs(lastScrollTop - st) <= delta)
+            return;
+
+        // If they scrolled down and are past the navbar, add class .nav-up.
+        // This is necessary so you never see what is "behind" the navbar.
+        if (st > lastScrollTop && st > navbarHeight){
+            // Scroll Down
+            $('header').removeClass('nav-down').addClass('nav-up');
+        } else {
+            // Scroll Up
+            if(st + $(window).height() < $(document).height()) {
+                $('header').removeClass('nav-up').addClass('nav-down');
+            }
+        }
+
+        lastScrollTop = st;
+    }
+</script>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"></script>
+
+</body>
+</html>
