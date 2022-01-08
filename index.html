@@ -253,19 +253,6 @@ La seconda repository contiene invece i dati relativi alla consegna e somministr
     a inferire il tipo delle colonne dei vari file.
 </div>
 
-
-<h5>preprocessing sui dataframe</h5>
-Prima di effettuare le analisi vere e proprie, si eseguono delle operazioni di preprocessing sui dati
-<ul>
-    <li>conversioni in interi</li>
-    <li>conversione in data</li>
-    <li>estrazioni anno, gionri, mese, … da data</li>
-    <li>% valori nulli</li>
-    <li>motivare il perché non vengono considerate alcune colonne</li>
-    <li>rimozioni colonne</li>
-    <li>estrazione del dataset finale</li>
-</ul>
-
 <h4>Analisi sulle regioni</h4>
 Dal dataset delle regioni vengono eliminate delle colonne perchè poco utili:
 <ul>
@@ -284,13 +271,55 @@ Dal dataset delle regioni vengono eliminate delle colonne perchè poco utili:
         df_regioni = df_regioni.select([c <span class="k">for</span> c <span class="k">in</span> df_regioni.columns <span class="k">if</span> c <span class="k">not in</span> drop_cols])
     </pre>
 </div>
+<div>
+    Di converte la colonna data da stringa a data e si estraggono le varie parti della data, in particolar modo l'anno, il mese, il giorno che saranno poi
+    usare per fare confronti in base ai loro valori.
+</div>
+<div class="demo-highlight">
+    <pre>
+        <span></span>
+        <span class="c"># Estrazione giorno, mese e anno da data</span>
+        df_regioni = df_regioni.withColumn(<span class="s2">"data"</span>, to_date(<span class="s2">"data"</span>))
+        df_regioni = df_regioni.withColumn(<span class="s2">"anno"</span>, year(<span class="s2">"data"</span>))\
+                               .withColumn(<span class="s2">"mese</span>, month(<span class="s2">"data"</span>))\
+                               .withColumn(<span class="s2">"giorno_anno"</span>, dayofyear(<span class="s2">"data"</span>))
+    </pre>
+</div>
 
-andamenti giorno per giorno, dashboard simon
-mostrare esempio per la lombardia per: morti, incremento positivi
-visualizzazione andamenti
-mostrare aggregazione per le regioni, avg(morti), somma(positivi)
-ordine regione per: morti, ricoverati, positivi
-visualizzazione regioni
+<div>
+    In particolare, si crea un'ulteriore colonna, chiamata giorno_mese con il formato dd/mm usato per il confronto tra
+    gli anni. Questa nuova colonna è ottenuta applicando la funzione data_giorno_mese
+</div>
+<div class="demo-highlight">
+    <pre>
+        <span></span>
+        <span class="nf">def</span> data_giorno_mese(g, m):
+            <span class="k">if</span> g < 10 <span class="k">and</span> m < 10:
+                <span class="k">return</span> f<span class="s2">"0{g}-0{m}"</span>
+            <span class="k">elif</span> g < 10 <span class="k">and</span> m > 10:
+                <span class="k">return</span> f<span class="s2">"0{g}-{m}"</span>
+            <span class="k">elif</span> g > 10 <span class="k">and</span> m < 10:
+                <span class="k">return</span> f<span class="s2">"{g}-0{m}"</span>
+            <span class="k">else</span>:
+                <span class="k">return</span> f<span class="s2">"{g}-{m}"</span>
+
+        udf_data_giorno_mese = udf(data_giorno_mese, StringType())
+        df_regioni = df_regioni.withColumn(<span class="s2">"giorno_mese"</span>, udf_data_giorno_mese(df_regioni.giorno_mese, df_regioni.mese))
+    </pre>
+</div>
+
+<div>
+    Si è utilizzato il costrutto udf per poter applicare in modo parallelo la funzione data_giorno_mese ad dataset.
+    Si mostra un estratto del dataframe per la regione Lombardia con le nuove colonne estratte.
+</div>
+<div>
+    <img src="src/esempio_lombardia_andamento_dati.PNG" alt="Italian Trulli">
+</div>
+
+<div>
+    Si fornisce anche una visualizzaione interattiva con qui studiare l'andamento delle varie variabili nel periodo di
+    osservazione. Si può selezionare le regioni di interesse e i campi su cui visualizzare l'andamento.
+</div>
 
 <div id= "query1">
     <div  class="bg1 section center" style="float:left; width:100%;justify-content:center;">
@@ -298,11 +327,58 @@ visualizzazione regioni
     </div>
 </div>
 
+<div>
+    Per eaminare il comportamento delle varie regioni sulla base delle variabili, i dati sono stati aggregati sulle varie
+    colonne, per le regioni, si mostra il dataframe risultante con le regioni ordinate per il valore della media di nuovi
+    positivi giornalieri.
+</div>
+
+<div class="demo-highlight">
+    <pre>
+        <span></span>
+        <span class="c"># Aggregazion valor per le regioni</span>
+        df_regioni_stats = df_regioni.groupBy(<span class="s2">"denominazione_regione"</span>).agg(avg(<span class="s2">"ricoverati_con_sintomi"</span>).alias(<span class="s2">"ricoverati_con_sintomi"</span>),
+                                                                           avg(<span class="s2">"terapia_intensiva"</span>).alias(<span class="s2">"terapia_intensiva"</span>),
+                                                                           avg(<span class="s2">"totale_ospedalizzati"</span>).alias(<span class="s2">"totale_ospedalizzati"</span>),
+                                                                           avg(<span class="s2">"isolamento_domiciliare"</span>).alias(<span class="s2">"isolamento_domiciliare"</span>),
+                                                                           avg(<span class="s2">"totale_positivi"</span>).alias(<span class="s2">"totale_positivi"</span>),
+                                                                           avg(<span class="s2">"variazione_totale_positivi"</span>).alias(<span class="s2">"variazione_totale_positivi"</span>),
+                                                                           avg(<span class="s2">"nuovi_positivi"</span>).alias(<span class="s2">"nuovi_positivi"</span>),
+                                                                           max(<span class="s2">"dimessi_guariti"</span>).alias(<span class="s2">"dimessi_guariti"</span>),
+                                                                           max(<span class="s2">"deceduti"</span>).alias(<span class="s2">"deceduti"</span>),
+                                                                           max(<span class="s2">"tamponi"</span>).alias(<span class="s2">"tamponi"</span>),
+                                                                           max(<span class="s2">"casi_testati"</span>).alias(<span class="s2">"casi_testati"</span>),
+                                                                           avg(<span class="s2">"ingressi_terapia_intensiva"</span>).alias(<span class="s2">"ingressi_terapia_intensiva"</span>))
+
+        <span class="k"></span> c <span class="k">in</span> df_regioni_stats.columns:
+            <span class="k">if</span> c != <span class="s2">"denominazione_regione"</span>:
+                df_regioni_stats = df_regioni_stats.withColumn(c, round(c, 3))
+
+        df_regioni_stats = df_regioni_stats.orderBy(<span class="s2">"nuovi_positivi"</span>, ascending=<span class="s2">False</span>)
+
+    </pre>
+</div>
+
+<div>
+    <img src="src/regioni_agg_valori.PNG" alt="Italian Trulli">
+</div>
+
+<div>
+    Come nel caso precedente, si fornisce una visuaizzazione interattiva in cui, alla scelta della variabile di interesse e del periodo di osservazione,
+    le regioni sono ordinate per il valore.
+</div>
+
 <div id= "query2">
     <div class="bg1 section center" style="float:left; width:100%;">
         <div id="containerQuery2" style="width:100%;height:800px"></div>
     </div>
 </div>
+
+
+calcolare incrementi giornalieri di morti, dimessi_guariti, totale_casi, tamponi
+
+
+
 
 <h5>Indice RT</h5>
 <div>
@@ -358,32 +434,25 @@ visualizzazione regioni
         <span class="n">df_rt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df_rt</span><span class="p">.</span><span class="n">drop</span><span class="p">(</span><span class="s">"_c0"</span><span class="p">)</span><span class="w"></span>
     </pre>
 </div>
-METTERE FIGURA DI df_rt
 
 mostrare media RT per regioni
 
 <div class="demo-highlight">
     <pre>
         <span></span>
-        df_rt_stats = df_rt.groupBy(<span class="s">"regione"</span>).agg(avg(<span class="s">"rt_positivi"</span>).alias(<span class="s">"_"</span>.join([<span class="s">"avg"</span>, <span class="s">"rt_positivi"</span>])),
-                                                   stddev(<span class="s">"rt_positivi"</span>).alias(<span class="s">"_"</span>.join([<span class="s">"std"</span>, <span class="s">"rt_positivi"</span>])),
-                                                   count(<span class="s">"rt_positivi"</span>).alias(<span class="s">"_"</span>.join([<span class="s">"count"</span>, <span class="s">"rt_positivi"</span>])),
-                                                   avg(<span class="s">"rt_sintomatici"</span>).alias(<span class="s">"_"</span>.join([<span class="s">"avg"</span>, <span class="s">"rt_sintomatici"</span>])),
-                                                   stddev(<span class="s">"rt_sintomatici"</span>).alias(<span class="s">"_"</span>.join([<span class="s">"std"</span>, <span class="s">"rt_sintomatici"</span>])),
-                                                   count(<span class="s">"rt_sintomatici"</span>).alias(<span class="s">"_"</span>.join([<span class="s">"count"</span>, <span class="s">"rt_sintomatici"</span>])))
-
-        df_rt_stats = df_rt_stats.withColumn(<span class="s">"ci95_lo_rt_positivi"</span>, df_rt_stats.avg_rt_positivi - <span class="mf">1.96</span>*df_rt_stats.std_rt_positivi/df_rt_stats.count_rt_positivi)
-        df_rt_stats = df_rt_stats.withColumn(<span class="s">"ci95_hi_rt_positivi"</span>, df_rt_stats.avg_rt_positivi + <span class="mf">1.96</span>*df_rt_stats.std_rt_positivi/df_rt_stats.count_rt_positivi)
-
-        df_rt_stats = df_rt_stats.withColumn(<span class="s">"ci95_lo_rt_sintomatici"</span>, df_rt_stats.avg_rt_sintomatici - <span class="mf">1.96</span>*df_rt_stats.std_rt_sintomatici/df_rt_stats.count_rt_sintomatici)
-        df_rt_stats = df_rt_stats.withColumn(<span class="s">"ci95_hi_rt_sintomatici"</span>, df_rt_stats.avg_rt_sintomatici + <span class="mf">1.96</span>*df_rt_stats.std_rt_sintomatici/df_rt_stats.count_rt_sintomatici)
+        df_rt_stats = df_rt.groupBy(<span class="s">"regione"</span>).agg(avg(<span class="s">"rt_positivi"</span>).alias(<span class="s">"avg_rt_positivi"</span>),
+                                                   avg(<span class="s">"rt_sintomatici"</span>).alias(<span class="s">"avg_rt_sintomatici"</span>),
+                                                   count(<span class="s">"rt_sintomatici"</span>).alias(<span class="s">"giorni"</span>))
 
         <span class="k">for</span> c <span class="k">in</span> df_rt_stats.columns:
             <span class="k">if</span> c != <span class="s">"regione"</span>:
-                df_rt_stats = df_rt_stats.withColumn(c, round(c, <span class="mf">2</span>))
+                df_rt_stats = df_rt_stats.withColumn(c, round(c, <span class="mf">3</span>))
     </pre>
 </div>
-METTERE FIGURA DEL DATASET AGGREGATO
+
+<div>
+    <img src="src/RT_agg_regioni.PNG" alt="Italian Trulli">
+</div>
 
 visualizzazione scatter con media RT
 <div id= "query3">
@@ -396,13 +465,266 @@ visualizzazione scatter con media RT
 visualizzazione andamento RT per regione e con Italia come confronto
 
 <h4>Analisi province</h4>
+<div>
+    Nel dataset mancano le osservazioni di alcune province, il primo passagio ha lo scopo di filtrare le righe che
+    contengono delle province non specificate. Successivamente si rimuovono le colonne poco utili come stato, note, codice_nuts_1,
+    codice_nuts_2 e codice_nuts_3.
+</div>
+
+<div class="demo-highlight">
+    <pre>
+        <span></span>
+
+        df_province = df_province.filter(df_province.sigla_provincia.isNotNull())
+        df_province = df_province.drop(<span class="s">"stato"</span>, <span class="s">"note"</span>, <span class="s">"codice_nuts_1"</span>, <span class="s">"codice_nuts_2"</span>, <span class="s">"codice_nuts_3"</span>)
+    </pre>
+</div>
+
+
+
+<div class="demo-highlight">
+    <pre>
+        <span></span>
+
+        df_province_group = df_province.groupBy(<span class="s">"denominazione_provincia"</span>).agg(max(<span class="s">"totale_casi"</span>).alias(<span class="s">"totale_casi"</span>),
+                                                                               count(<span class="s">"data"</span>).alias(<span class="s">"totale_giorni"</span>))
+
+        df_province_group = df_province_group.withColumn(<span class="s">"media_casi"</span>, round(df_province_group.totale_casi/df_province_group.totale_giorni, 3)).orderBy(<span class="s">"totale_casi"</span>, ascending=False)
+    </pre>
+</div>
+<div>
+    Si mostrano le prime 20 province per numero di casi.
+</div>
+
+<div>
+    <img src="src/regioni_agg_valori.PNG" alt="Italian Trulli">
+</div>
+
+<div>
+    Si calcola per ogni provincia, quanto questa abbia pesato nel totale dei casi nella sua regione in percentuale
+</div>
+
+<div class="demo-highlight">
+    <pre>
+        <span></span>
+        df_regioni_somma_casi = df_province_group.groupBy(<span class="s">"denominazione_regione"</span>).agg(sum(<span class="s">"totale_casi"</span>).alias(<span class="s">"totale_casi_reg"</span>))
+
+        df_province_group = df_province_group.join(df_regioni_somma_casi, on=<span class="s">"denominazione_regione"</span>, how=<span class="s">"left_outer"</span>)
+        df_province_group = df_province_group.withColumn(<span class="s">"%_casi_su_reg"</span>, round((df_province_group.totale_casi/df_province_group.totale_casi_reg)*100, 3))
+        df_province_group = df_province_group.orderBy(<span class="s">"%_casi_su_reg"</span>, ascending=False)
+    </pre>
+</div>
+<div>
+    Si mostrano le prime 20 province che hanno maggiormente pesato sul numero dei casi della loro provincia.
+</div>
+<div>
+    <img src="src/peso_province.PNG" alt="Italian Trulli">
+</div>
+<div>
+    Si mostra questa analisi applicata alla regione Lombardia.
+</div>
+<div class="demo-highlight">
+    <pre>
+        <span></span>
+        df_province_lombardia = df_province_group.filter(df_province_group.denominazione_regione == <span class="s">"Lombardia"</span>)
+    </pre>
+</div>
+
+<div>
+    <img src="src/lombardia_province.PNG" alt="Italian Trulli">
+</div>
+VISUALIZZAZIONI
 andamento totale casi delle province raggruppate per regione
-mostrare esempio Lombardia
-calcolare % sul totale delle provincie
 visualizzazione andamento per regione,
 
 <h4>Analisi vaccini</h4>
 database vaccini (andamenti, consegne, dosi somministrate, coperture etc – parte alessia)
+
+<div>
+    Di seguito sono riportate le analisi sui dati concernenti le consegne e le somministrazioni dei vaccini per il COVID - 19.
+    Nel dataset iniziale la platea è divisa per fasce d'età e regioni, per ottere la platea complessiva per ciascuna regione
+    raggruppiamo i dati  tramite la funzione groupBy in base alla colonna "nome_area"
+</div>
+
+<div class="demo-highlight">
+    <pre>
+        <span></span>
+        df_platea = df_platea.groupBy(<span class="s">"nome_area"</span>).agg(sum(<span class="s">"totale_popolazione"</span>).alias(<span class="s">"tot_platea"</span>))
+       </pre>
+</div>
+
+<div>
+    <img src="src/tot_platea_regioni.PNG" alt="Italian Trulli">
+</div>
+
+<div>
+    Per mostrare l'andamento delle somministrazioni a livello nazionale dall'inizio della pandemia fino a dicembre 2021,
+    aggreghiamo i dati tramite la funzione "groupBy" sulla data di somministrazione e calcoliamo la somma sul totale delle
+    somministrazioni effettuate, ordinandole per data.
+</div>
+<div class="demo-highlight">
+    <pre>
+        <span></span>
+        df_daily = df_somm_vaccini.groupBy(<span class="s">"data_somministrazione"</span>).agg(sum(<span class="s">"totale"</span>).alias(<span class="s">"totale_somministrazioni_giornaliere"</span>)).orderBy(<span class="s">"data_somministrazione"</span>, ascending=True)
+    </pre>
+</div>
+
+
+<div>
+    <img src="src/vaccini_per_giorno.PNG" alt="Italian Trulli">
+</div>
+
+
+<div>
+    Per mostrare l'andamento delle somministrazioni a livello nazionale dall'inizio della pandemia fino a dicembre 2021,
+    aggreghiamo i dati tramite la funzione "groupBy" sulla data di somministrazione e calcoliamo la somma sul totale delle
+    somministrazioni effettuate, ordinandole per data.
+</div>
+
+
+<div class="demo-highlight">
+    <pre>
+        <span></span>
+        df_daily = df_somm_vaccini.groupBy(<span class="s">"data_somministrazione"</span>).agg(sum(<span class="s">"totale"</span>).alias(<span class="s">"totale_somministrazioni_giornaliere"</span>)).orderBy(<span class="s">"data_somministrazione"</span>, ascending=True)
+    </pre>
+</div>
+
+
+<div>
+    Per mostrare i dati complessivi a livello nazionale delle somministrazioni usiamo dinuovo la funzione "groupBy" sulla
+    data di somministrazione e sui fornitori.
+    Nel database contenente le informazioni riguardanti i fornitori manca l'informazione sul totale delle dosi somministrate.
+    Per ottenerla  sommiamo i dati che ci interessano (prima, seconda e terza dose) e creiamo una nuova colonna "totale_somministrazioni".
+
+</div>
+
+<div class="demo-highlight">
+    <pre>
+        <span></span>
+        df_daily1 = df_somm_fornitori.groupBy(<span class="s">"data_somministrazione"</span>, <span class="s">"fornitore"</span>).agg(sum(<span class="s">"prima_dose"</span>).alias(<span class="s">"totale_prima_dose"</span>),
+                                                                                        sum(<span class="s">"seconda_dose"</span>).alias(<span class="s">"totale_seconda_dose"</span>),
+                                                                                        sum(<span class="s">"pregressa_infezione"</span>).alias(<span class="s">"totale_pregressa_infezione"</span>),
+                                                                                        sum (<span class="s">"dose_addizionale_booster"</span>).alias(<span class="s">"totale_dose_booster"</span>))\
+                        .withColumn(<span class="s">"totale_somministrazioni"</span>, col(<span class="s">"totale_prima_dose"</span>) + col(<span class="s">"totale_seconda_dose"</span>) + col(<span class="s">"totale_pregressa_infezione"</span>) + col(<span class="s">"totale_dose_booster"</span>))\
+                        .orderBy(<span class="s">"data_somministrazione"</span>, ascending = True)
+    </pre>
+</div>
+
+<div>
+    <img src="src/somministarzioni_vaccino_tipo_giorno.PNG" alt="Italian Trulli">
+</div>
+
+<div>
+    Per un'analisi più accurata della campagna vaccinale, effettuiamo uno studio dei dati a livello regionale.
+</div>
+
+
+<div class="demo-highlight">
+    <pre>
+        <span></span>
+        <span class="c"># Totale delle dosi consegnate per regione</span>
+        df_consegne_tot = df_consegne.groupBy(<span class="s">"nome_area"</span>).sum(<span class="s">"numero_dosi"</span>).orderBy(<span class="s">"nome_area"</span>, ascendent=True)
+        df_consegne_tot = df_consegne_tot.withColumnRenamed(<span class="s">"sum(numero_dosi)"</span>, <span class="s">"sum_dosi_consegnate"</span>)
+    </pre>
+</div>
+
+<div>
+    <img src="src/dosi_consegnate_regione.PNG" alt="Italian Trulli">
+</div>
+METTERE BAR CHART CON REGIONI
+
+<div class="demo-highlight">
+    <pre>
+        <span></span>
+        <span class="c"># Guardiamo alle consegne dei vaccini per ciascuna regione, divise però per fornitore</span>
+        df_consegne = df_consegne.groupBy(<span class="s">"codice_regione_ISTAT"</span>, <span class="s">"nome_area"</span>, <span class="s">"fornitore"</span>)\
+                                 .sum(<span class="s">"numero_dosi"</span>)\
+                                 .orderBy(<span class="s">"codice_regione_ISTAT"</span>, ascendent=True)
+    </pre>
+</div>
+<div>
+    <img src="src/dosi_regione_fornitore.PNG" alt="Italian Trulli">
+</div>
+
+<div class="demo-highlight">
+    <pre>
+        <span></span>
+        <span class="c"># È possibile poi guardare all'andamento della campagna vaccinale, analizzando l'andamento delle consegne dei vaccini giorno per giorno invece che in aggregato</span>
+        df_consegne_andamento = df_consegne.groupBy(<span class="s">"data_consegna"</span>, <span class="s">"nome_area"</span>).sum(<span class="s">"numero_dosi"</span>).orderBy(<span class="s">"data_consegna"</span>, ascendent=True)
+    </pre>
+</div>
+
+METTERE VIZ CON ANDAMENTO PER REGIONE O IMMAGINE andamento_vaccini_per_data.PNG
+
+<div>
+    Un'ulteriore analisi può essere fatta entrando nel dettaglio della popolazione vaccinata. Di seguito sono state svolte
+    alcune analisi per ottenere: il numero di coloro che hanno completato il ciclo vaccinale, una descrizione della
+    copertura vaccinale per fasce d'età e della distribuzione dei punti di somministrazione sul territorio regionale.
+</div>
+
+
+<div class="demo-highlight">
+    <pre>
+        <span></span>
+        <span class="c"># Calcoliamo il numero di persone che hanno completato il ciclo vaccinale sommando le colonne "seconda_dose" e "pregressa_infezione"</span>
+        <span class="c"># del database contentente i dati sulle somministrazioni</span>
+        <span class="c"># Prima raggruppiamo i dati sulla chiave "nome_area"</span>
+
+        df_completi = df_somm_vaccini.groupBy(<span class="s">"nome_area"</span>).sum(<span class="s">"seconda_dose"</span>, <span class="s">"pregressa_infezione"</span>).orderBy(<span class="s">"nome_area"</span>, ascendent=True)
+        df_completi = df_completi.withColumnRenamed(<span class="s">"nome_area"</span>, <span class="s">"nome_area2"</span>)
+
+        <span class="c"># Creiamo una colonna per i dati che vogliamo aggiungere</span>
+        df_completi = df_completi.withColumn(<span class="s">"totale_completi"</span>, col(<span class="s">"sum(seconda_dose)"</span>) + col(<span class="s">"sum(pregressa_infezione)"</span>))
+
+        <span class="c"># Aggiungiamo i dati sulla platea e su tutta la popolazione</span>
+        df_completi = df_completi.join(df_platea, (df_completi.nome_area2==df_platea.nome_area))
+        df_completi = df_completi.join(df_pop_new1, (df_completi.nome_area2==df_pop_new1.denominazione_regione_pop))
+
+        <span class="c"># Eliminiamo le colonne superflue</span>
+        df_completi = df_completi.drop(<span class="s">"sum(seconda_dose)"</span>, <span class="s">"sum(pregressa_infezione)"</span>,  <span class="s">"nome_area"</span>, <span class="s">"codice_regione"</span>, <span class="s">"denominazione_regione_pop"</span>, <span class="s">"sigla_regione"</span>)
+
+        df_completi = df_completi.withColumn(<span class="s">"%_platea"</span>, round((col(<span class="s">"totale_completi"</span>)/col(<span class="s">"tot_platea"</span>))*100, 3))
+        df_completi = df_completi.withColumn(<span class="s">"%_tot_popolazione"</span>, round((col(<span class="s">"totale_completi"</span>)/col(<span class="s">"totale_popolazione"</span>))*100, 3))
+    </pre>
+</div>
+
+<div>
+    <img src="src/top10_reg_copertura_vaccinale.PNG" alt="Italian Trulli">
+</div>
+
+<div>
+    Si calcolano le percentuali di vaccinati sul totale della popolazione, diviso per fasce d'età. Si è scelto di considerare
+    soltanto gli over 20 per cui si procede al filtraggio dei database popolazione e vaccinati.
+</div>
+
+
+<div class="demo-highlight">
+    <pre>
+        <span></span>
+        <span class="c"># Calcoliamo il numero di persone che hanno completato il ciclo vaccinale sommando le colonne "seconda_dose" e "pregressa_infezione"</span>
+        <span class="c"># del database contentente i dati sulle somministrazioni</span>
+        <span class="c"># Prima raggruppiamo i dati sulla chiave "nome_area"</span>
+
+        df_completi = df_somm_vaccini.groupBy(<span class="s">"nome_area"</span>).sum(<span class="s">"seconda_dose"</span>, <span class="s">"pregressa_infezione"</span>).orderBy(<span class="s">"nome_area"</span>, ascendent=True)
+        df_completi = df_completi.withColumnRenamed(<span class="s">"nome_area"</span>, <span class="s">"nome_area2"</span>)
+
+        df_pop_range_adults = df_pop_range.filter((df_pop_clean.range_eta != <span class="s">"0-15"</span>) & (df_pop_clean.range_eta != <span class="s">"16-19"</span>))
+
+        df_vaccini_adults = df_vaccini_range.filter(df_vaccini_range.fascia_anagrafica != <span class="s">"12-19"</span>)
+
+        <span class="c">#Uniamo ora i due dataframe</span>
+        vaccini_adults = df_vaccini_adults.join(df_pop_range_adults, (df_vaccini_adults.fascia_anagrafica == df_pop_range_adults.range_eta)).orderBy(<span class="s">"fascia_anagrafica"</span>, ascending=True)
+        </pre>
+</div>
+
+df_pop_range_adults = df_pop_range.filter((df_pop_clean.range_eta != "0-15") & (df_pop_clean.range_eta != "16-19"))
+
+df_vaccini_adults = df_vaccini_range.filter(df_vaccini_range.fascia_anagrafica != "12-19")
+
+#Uniamo ora i due dataframe
+vaccini_adults = df_vaccini_adults.join(df_pop_range_adults, (df_vaccini_adults.fascia_anagrafica==df_pop_range_adults.range_eta)).orderBy("fascia_anagrafica", ascending=True)
+display(vaccini_adults)
+
 
 <h4>Analisi meteo</h4>
 
